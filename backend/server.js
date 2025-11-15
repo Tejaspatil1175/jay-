@@ -10,9 +10,13 @@ const connectDB = require('./config/database');
 const { errorHandler } = require('./utils/errorHandler');
 
 // Import routes
+const authRoutes = require('./routes/authRoutes');
 const companyRoutes = require('./routes/companyRoutes');
 const analysisRoutes = require('./routes/analysisRoutes');
 const chatRoutes = require('./routes/chatRoutes');
+const portfolioRoutes = require('./routes/portfolioRoutes');
+const marketRoutes = require('./routes/marketRoutes');
+const documentRoutes = require('./routes/documentRoutes');
 
 // Initialize Express
 const app = express();
@@ -61,17 +65,48 @@ app.get('/', (req, res) => {
     version: '1.0.0',
     status: 'Running',
     endpoints: {
-      company: '/api/company/:symbol',
-      analyze: '/api/analyze/:symbol',
-      chat: '/api/chat'
+      auth: {
+        register: 'POST /api/auth/register',
+        login: 'POST /api/auth/login',
+        refresh: 'POST /api/auth/refresh',
+        profile: 'GET /api/auth/profile'
+      },
+      company: {
+        get: 'GET /api/company/:symbol',
+        refresh: 'GET /api/company/:symbol/refresh'
+      },
+      market: {
+        movers: 'GET /api/market/movers',
+        screener: 'GET /api/market/screener',
+        indicators: 'GET /api/market/indicators/:symbol/:type'
+      },
+      portfolio: {
+        summary: 'GET /api/portfolio/summary',
+        holdings: 'GET /api/portfolio/holdings',
+        orders: 'GET /api/portfolio/orders',
+        positions: 'GET /api/portfolio/positions',
+        buy: 'POST /api/portfolio/orders/buy',
+        sell: 'POST /api/portfolio/orders/sell'
+      },
+      documents: {
+        upload: 'POST /api/documents/upload',
+        list: 'GET /api/documents',
+        get: 'GET /api/documents/:documentId'
+      },
+      analyze: 'POST /api/analyze/:symbol',
+      chat: 'POST /api/chat'
     }
   });
 });
 
 // API Routes
+app.use('/api/auth', authRoutes);
 app.use('/api/company', companyRoutes);
 app.use('/api/analyze', analysisRoutes);
 app.use('/api/chat', chatRoutes);
+app.use('/api/portfolio', portfolioRoutes);
+app.use('/api/market', marketRoutes);
+app.use('/api/documents', documentRoutes);
 
 // 404 handler
 app.use('*', (req, res) => {
@@ -90,34 +125,33 @@ const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
   console.log(`
-╔════════════════════════════════════════════════════════╗
-║                                                        ║
-║   🚀 Finora AI Investment Analyst API                 ║
-║                                                        ║
-║   📊 Server running on port ${PORT}                      ║
-║   🌍 Environment: ${process.env.NODE_ENV || 'development'}                    ║
-║   💾 Database: MongoDB                                 ║
-║   🤖 AI Model: Gemini 2.0 Flash                       ║
-║                                                        ║
-║   Endpoints:                                           ║
-║   • GET  /api/company/:symbol                         ║
-║   • POST /api/analyze/:symbol                         ║
-║   • POST /api/chat                                    ║
-║                                                        ║
-╚════════════════════════════════════════════════════════╝
+
+  🚀 Finora AI Investment Analyst API                 
+                                                      
+    Server running on port ${PORT}                      
+    Environment: ${process.env.NODE_ENV || 'development'}                    
+    Database: MongoDB                                 
+    AI Model: Gemini 2.5 Flash                       
+                                                        
+  Endpoints:                                           
+  • GET  /api/company/:symbol                         
+  • POST /api/analyze/:symbol                         
+  • POST /api/chat                                    
+                                                       
+
   `);
 });
 
 // Handle unhandled promise rejections
 process.on('unhandledRejection', (err) => {
-  console.error('❌ UNHANDLED REJECTION! Shutting down...');
+  console.error(' UNHANDLED REJECTION! Shutting down...');
   console.error(err.name, err.message);
   process.exit(1);
 });
 
 // Handle uncaught exceptions
 process.on('uncaughtException', (err) => {
-  console.error('❌ UNCAUGHT EXCEPTION! Shutting down...');
+  console.error(' UNCAUGHT EXCEPTION! Shutting down...');
   console.error(err.name, err.message);
   process.exit(1);
 });

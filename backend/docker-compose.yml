@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  # Apache Tika Server for Document Text Extraction
+  tika:
+    image: apache/tika:latest
+    container_name: finora-tika
+    ports:
+      - "9998:9998"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9998/tika"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - finora-network
+
+  # MongoDB (Optional - if you want to run MongoDB in Docker)
+  # mongodb:
+  #   image: mongo:latest
+  #   container_name: finora-mongodb
+  #   ports:
+  #     - "27017:27017"
+  #   volumes:
+  #     - mongodb_data:/data/db
+  #   environment:
+  #     MONGO_INITDB_ROOT_USERNAME: admin
+  #     MONGO_INITDB_ROOT_PASSWORD: password
+  #   restart: unless-stopped
+  #   networks:
+  #     - finora-network
+
+networks:
+  finora-network:
+    driver: bridge
+
+# volumes:
+#   mongodb_data:

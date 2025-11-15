@@ -1,83 +1,79 @@
-const axios = require('axios');
-const { GEMINI } = require('../config/constants');
+const Groq = require('groq-sdk');
 
-class GeminiService {
+class GroqService {
   constructor() {
-    this.apiKey = process.env.GEMINI_API_KEY;
-    this.baseURL = GEMINI.BASE_URL;
-    this.model = GEMINI.MODEL;
+    this.client = new Groq({ 
+      apiKey: process.env.GROQ_API_KEY
+    });
+    this.model = 'llama-3.3-70b-versatile'; // Updated to a stable model
   }
 
   /**
-   * Generate content using Gemini API
-   */
-  async generateContent(prompt) {
-    try {
-      const url = `${this.baseURL}/${this.model}:generateContent?key=${this.apiKey}`;
-
-      const response = await axios.post(
-        url,
-        {
-          contents: [{
-            parts: [{
-              text: prompt
-            }]
-          }],
-          generationConfig: {
-            temperature: GEMINI.TEMPERATURE,
-            maxOutputTokens: GEMINI.MAX_TOKENS,
-          }
-        },
-        {
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          timeout: GEMINI.TIMEOUT
-        }
-      );
-
-      if (!response.data.candidates || response.data.candidates.length === 0) {
-        throw new Error('No response from Gemini API');
-      }
-
-      const text = response.data.candidates[0].content.parts[0].text;
-      return {
-        text,
-        raw: response.data
-      };
-    } catch (error) {
-      console.error('Gemini API Error:', error.response?.data || error.message);
-      
-      // Better error message for common issues
-      if (error.response?.status === 404) {
-        console.error(`❌ Model '${this.model}' not found. Available models: gemini-1.5-flash, gemini-1.5-pro, gemini-pro`);
-      }
-      
-      throw new Error('Failed to generate AI response: ' + (error.response?.data?.error?.message || error.message));
-    }
-  }
-
-  /**
-   * Generate text response (simple wrapper)
+   * Generate text response
    */
   async generateText(prompt) {
     try {
-      const result = await this.generateContent(prompt);
-      return result.text;
+      console.log('🤖 Groq API Request - Model:', this.model);
+      
+      const chatCompletion = await this.client.chat.completions.create({
+        messages: [
+          { 
+            role: 'user', 
+            content: prompt 
+          }
+        ],
+        model: this.model,
+        temperature: 0.7,
+        max_tokens: 4000,
+      });
+
+      if (!chatCompletion.choices || chatCompletion.choices.length === 0) {
+        throw new Error('No response from Groq API');
+      }
+
+      const text = chatCompletion.choices[0].message.content;
+      console.log('✅ Groq response received:', text.length, 'characters');
+      
+      return text;
     } catch (error) {
-      throw error;
+      console.error('❌ Groq API Error:', error.message);
+      if (error.response) {
+        console.error('Error details:', JSON.stringify(error.response.data));
+      }
+      throw new Error('Failed to generate AI response: ' + error.message);
     }
   }
 
   /**
-   * Generate enhanced chat response with multi-source context
+   * Generate content with system prompt
    */
-  async generateEnhancedChatResponse(prompt) {
+  async generateContent(prompt, systemPrompt = null) {
     try {
-      const result = await this.generateContent(prompt);
-      return result.text;
+      const messages = [];
+      
+      if (systemPrompt) {
+        messages.push({ role: 'system', content: systemPrompt });
+      }
+      
+      messages.push({ role: 'user', content: prompt });
+
+      const chatCompletion = await this.client.chat.completions.create({
+        messages: messages,
+        model: this.model,
+        temperature: 0.7,
+        max_tokens: 4000,
+      });
+
+      if (!chatCompletion.choices || chatCompletion.choices.length === 0) {
+        throw new Error('No response from Groq API');
+      }
+
+      return {
+        text: chatCompletion.choices[0].message.content,
+        raw: chatCompletion
+      };
     } catch (error) {
-      console.error('Gemini generateEnhancedChatResponse Error:', error.message);
+      console.error('❌ Groq generateContent Error:', error.message);
       throw error;
     }
   }
@@ -116,23 +112,23 @@ Important:
 `;
 
     try {
-      const result = await this.generateContent(prompt);
+      const result = await this.generateText(prompt);
       
       // Try to parse JSON from response
       let analysis;
       try {
         // Remove markdown code blocks if present
-        const cleanText = result.text
+        const cleanText = result
           .replace(/```json\n?/g, '')
           .replace(/```\n?/g, '')
           .trim();
         
         analysis = JSON.parse(cleanText);
       } catch (parseError) {
-        console.error('Failed to parse Gemini JSON response:', parseError.message);
+        console.error('Failed to parse Groq JSON response:', parseError.message);
         // Fallback structure
         analysis = {
-          summary: result.text,
+          summary: result,
           insights: {},
           risk: 'Medium',
           suggestion: 'Further analysis recommended'
@@ -142,10 +138,10 @@ Important:
       return {
         ...analysis,
         llmModel: this.model,
-        llmRawResponse: result.raw
+        llmProvider: 'groq'
       };
     } catch (error) {
-      console.error('Gemini analyzeFinancials Error:', error.message);
+      console.error('Groq analyzeFinancials Error:', error.message);
       throw error;
     }
   }
@@ -154,8 +150,7 @@ Important:
    * Chat with context (for chatbot)
    */
   async chatWithContext(userMessage, companyData, chatHistory = [], webSearchResults = null) {
-    const contextPrompt = `
-You are a helpful financial assistant helping a retail investor understand their selected company.
+    const systemPrompt = `You are a helpful financial assistant helping a retail investor understand their selected company.
 
 Company Context:
 Symbol: ${companyData.symbol}
@@ -165,26 +160,42 @@ Analysis Summary: ${companyData.analysis?.summary || 'No analysis available'}
 
 ${webSearchResults ? `Recent Web Search Results:\n${webSearchResults}\n` : ''}
 
-${chatHistory.length > 0 ? `Previous Conversation:\n${chatHistory.map(msg => `${msg.role}: ${msg.content}`).join('\n')}\n` : ''}
-
-User Question: ${userMessage}
-
 Instructions:
 - Answer based on the company data provided
 - Use simple language for retail investors
 - If you used web search results, cite them
 - If data is missing, acknowledge it honestly
 - Keep responses concise and actionable
-- Don't make up data
+- Don't make up data`;
 
-Your Response:
-`;
+    const messages = [
+      { role: 'system', content: systemPrompt }
+    ];
+
+    // Add chat history
+    if (chatHistory.length > 0) {
+      chatHistory.forEach(msg => {
+        messages.push({
+          role: msg.role === 'user' ? 'user' : 'assistant',
+          content: msg.content
+        });
+      });
+    }
+
+    // Add current message
+    messages.push({ role: 'user', content: userMessage });
 
     try {
-      const result = await this.generateContent(contextPrompt);
-      return result.text;
+      const chatCompletion = await this.client.chat.completions.create({
+        messages: messages,
+        model: this.model,
+        temperature: 0.7,
+        max_tokens: 2000,
+      });
+
+      return chatCompletion.choices[0].message.content;
     } catch (error) {
-      console.error('Gemini chatWithContext Error:', error.message);
+      console.error('Groq chatWithContext Error:', error.message);
       throw error;
     }
   }
@@ -212,14 +223,14 @@ Your answer (YES or NO):
 `;
 
     try {
-      const result = await this.generateContent(prompt);
-      const answer = result.text.trim().toUpperCase();
+      const result = await this.generateText(prompt);
+      const answer = result.trim().toUpperCase();
       return answer.includes('YES');
     } catch (error) {
-      console.error('Gemini shouldUseWebSearch Error:', error.message);
+      console.error('Groq shouldUseWebSearch Error:', error.message);
       return false; // Default to no web search on error
     }
   }
 }
 
-module.exports = new GeminiService();
+module.exports = new GroqService();

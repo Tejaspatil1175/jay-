@@ -26,7 +26,10 @@ const ChatHistorySchema = new mongoose.Schema({
       type: Boolean,
       default: false
     },
-    sources: [String]
+    sources: [{
+      name: String,
+      url: String
+    }]
   }],
   userId: String,
   createdAt: {

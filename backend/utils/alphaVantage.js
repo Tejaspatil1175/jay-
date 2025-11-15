@@ -142,16 +142,101 @@ class AlphaVantageService {
   }
 
   /**
-   * Fetch all company data
+   * Fetch SMA (Simple Moving Average)
+   */
+  async fetchSMA(symbol, timePeriod = 20, interval = 'daily') {
+    try {
+      const response = await axios.get(this.baseURL, {
+        params: {
+          function: 'SMA',
+          symbol,
+          interval,
+          time_period: timePeriod,
+          series_type: 'close',
+          apikey: this.apiKey
+        },
+        timeout: ALPHA_VANTAGE.TIMEOUT
+      });
+
+      if (response.data.Note) {
+        throw new Error('AlphaVantage API rate limit exceeded');
+      }
+
+      return response.data['Technical Analysis: SMA'] || {};
+    } catch (error) {
+      console.error('AlphaVantage SMA Error:', error.message);
+      throw error;
+    }
+  }
+
+  /**
+   * Fetch RSI (Relative Strength Index)
+   */
+  async fetchRSI(symbol, timePeriod = 14, interval = 'daily') {
+    try {
+      const response = await axios.get(this.baseURL, {
+        params: {
+          function: 'RSI',
+          symbol,
+          interval,
+          time_period: timePeriod,
+          series_type: 'close',
+          apikey: this.apiKey
+        },
+        timeout: ALPHA_VANTAGE.TIMEOUT
+      });
+
+      if (response.data.Note) {
+        throw new Error('AlphaVantage API rate limit exceeded');
+      }
+
+      return response.data['Technical Analysis: RSI'] || {};
+    } catch (error) {
+      console.error('AlphaVantage RSI Error:', error.message);
+      throw error;
+    }
+  }
+
+  /**
+   * Fetch MACD (Moving Average Convergence Divergence)
+   */
+  async fetchMACD(symbol, interval = 'daily') {
+    try {
+      const response = await axios.get(this.baseURL, {
+        params: {
+          function: 'MACD',
+          symbol,
+          interval,
+          series_type: 'close',
+          apikey: this.apiKey
+        },
+        timeout: ALPHA_VANTAGE.TIMEOUT
+      });
+
+      if (response.data.Note) {
+        throw new Error('AlphaVantage API rate limit exceeded');
+      }
+
+      return response.data['Technical Analysis: MACD'] || {};
+    } catch (error) {
+      console.error('AlphaVantage MACD Error:', error.message);
+      throw error;
+    }
+  }
+
+  /**
+   * Fetch all company data with indicators
    */
   async fetchAllData(symbol) {
     try {
-      const [overview, incomeStatement, balanceSheet, cashFlow, timeSeries] = await Promise.all([
+      const [overview, incomeStatement, balanceSheet, cashFlow, timeSeries, sma, rsi] = await Promise.all([
         this.fetchOverview(symbol),
         this.fetchIncomeStatement(symbol),
         this.fetchBalanceSheet(symbol),
         this.fetchCashFlow(symbol),
-        this.fetchTimeSeriesDaily(symbol)
+        this.fetchTimeSeriesDaily(symbol),
+        this.fetchSMA(symbol, 20),
+        this.fetchRSI(symbol, 14)
       ]);
 
       return {
@@ -159,7 +244,11 @@ class AlphaVantageService {
         incomeStatement,
         balanceSheet,
         cashFlow,
-        timeSeries
+        timeSeries,
+        indicators: {
+          sma,
+          rsi
+        }
       };
     } catch (error) {
       console.error('AlphaVantage fetchAllData Error:', error.message);

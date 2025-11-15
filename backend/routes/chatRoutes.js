@@ -1,13 +1,14 @@
 const express = require('express');
 const router = express.Router();
 const chatController = require('../controllers/chatController');
+const { verifyAccessToken, optionalAuth } = require('../middleware/auth');
 
 /**
  * @route   POST /api/chat
- * @desc    Send message to AI chatbot
- * @access  Public
+ * @desc    Send message to AI chatbot (supports optional authentication)
+ * @access  Public/Private (optional auth)
  */
-router.post('/', chatController.chat);
+router.post('/', optionalAuth, chatController.chat);
 
 /**
  * @route   POST /api/chat/new
