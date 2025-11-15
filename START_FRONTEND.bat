@@ -1,24 +1,19 @@
 @echo off
-echo ========================================
-echo   Opening Finora AI Frontend
-echo ========================================
+echo ===================================
+echo Starting Finora Frontend
+echo ===================================
 echo.
 
 cd frontend
 
-echo Starting local web server...
+echo Installing dependencies...
+call npm install
+
 echo.
-echo Frontend will be available at: http://localhost:8080
-echo.
-echo IMPORTANT: Keep this window open!
-echo Press Ctrl+C to stop the server
+echo Starting development server...
+echo Server will open at http://localhost:3000
 echo.
 
-python -m http.server 8080
+call npm run dev
 
-if %errorlevel% neq 0 (
-    echo.
-    echo ERROR: Python not found or failed to start server
-    echo Alternative: Just double-click 'frontend/index.html'
-    pause
-)
+pause

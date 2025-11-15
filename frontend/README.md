@@ -1,322 +1,328 @@
-# Finora AI - Frontend Documentation
+# Finora Frontend
 
-## 🎨 Overview
-This is a modern, responsive web frontend for the Finora AI Investment Analyst platform. Built with pure HTML, CSS, and JavaScript (no frameworks), it provides a clean, professional interface for financial analysis.
-
-## 📁 Structure
-```
-frontend/
-├── index.html          # Main HTML file
-├── css/
-│   └── styles.css      # Complete styling (light theme)
-├── js/
-│   ├── api.js         # API service layer
-│   ├── chart.js       # Chart.js utilities
-│   └── app.js         # Main application logic
-└── assets/            # Images/icons (if needed)
-```
+AI-Powered Financial Analysis Platform - React Frontend
 
 ## 🚀 Quick Start
 
-### 1. Backend Setup (Required)
-Make sure your backend is running on `http://localhost:5000`
+### Prerequisites
+- Node.js (v20+)
+- Backend server running on http://localhost:5000
 
-Add these variables to your backend `.env` file:
-```env
-# Authentication Credentials (Frontend Login)
-AUTH_EMAIL=admin@finora.ai
-AUTH_PASSWORD=finora2024
+### Installation
 
-# Existing backend variables
-MONGO_URI=your_mongodb_connection_string
-ALPHA_VANTAGE_KEY=your_alpha_vantage_key
-GEMINI_API_KEY=your_gemini_api_key
-PORT=5000
-CORS_ORIGIN=*
-```
-
-### 2. Start Backend Server
 ```bash
-cd backend
-npm start
-# or
+# Navigate to frontend directory
+cd frontend
+
+# Install dependencies
+npm install
+
+# Create environment file
+cp .env.example .env
+
+# Start development server
 npm run dev
 ```
 
-### 3. Open Frontend
-Simply open `frontend/index.html` in your browser, or use a local server:
+The app will open at http://localhost:3000
 
-**Option A: Using Live Server (VS Code Extension)**
-- Install "Live Server" extension in VS Code
-- Right-click `index.html` → "Open with Live Server"
+## 📁 Project Structure
 
-**Option B: Using Python**
-```bash
-cd frontend
-python -m http.server 8080
-# Open http://localhost:8080
+```
+frontend/
+├── src/
+│   ├── components/          # Reusable components
+│   │   ├── Auth/           # Authentication components
+│   │   │   └── ProtectedRoute.jsx
+│   │   └── Layout/         # Layout components
+│   │       └── Navbar.jsx
+│   ├── context/            # React Context
+│   │   └── AuthContext.jsx
+│   ├── pages/              # Page components
+│   │   ├── Login.jsx
+│   │   ├── Register.jsx
+│   │   └── Dashboard.jsx
+│   ├── services/           # API services
+│   │   ├── api.js
+│   │   ├── authService.js
+│   │   ├── companyService.js
+│   │   ├── portfolioService.js
+│   │   ├── documentService.js
+│   │   ├── chatService.js
+│   │   └── marketService.js
+│   ├── utils/              # Utility functions
+│   │   ├── formatters.js
+│   │   └── validators.js
+│   ├── App.jsx             # Main app component
+│   ├── main.jsx            # Entry point
+│   └── index.css           # Global styles
+├── public/                 # Static assets
+├── .env                    # Environment variables
+├── .env.example            # Example env file
+├── package.json
+├── vite.config.js
+└── tailwind.config.js
 ```
 
-**Option C: Using Node.js**
-```bash
-cd frontend
-npx http-server -p 8080
-# Open http://localhost:8080
-```
+## 🎨 Tech Stack
 
-## 🔐 Default Login Credentials
-```
-Email: admin@finora.ai
-Password: finora2024
-```
+- **React 18** - UI Framework
+- **Vite** - Build tool & dev server
+- **React Router** - Client-side routing
+- **TailwindCSS** - Styling
+- **Axios** - HTTP client
+- **Lucide React** - Icons
+- **Recharts** - Data visualization
 
-⚠️ **Security Note**: These credentials are hardcoded in the frontend for demo purposes. In production, implement proper authentication with the backend.
+## ✨ Features Implemented
 
-## ✨ Features
+### ✅ Phase 1: Foundation
+- [x] Project setup with Vite
+- [x] TailwindCSS configuration
+- [x] API service layer with Axios
+- [x] JWT token management with auto-refresh
+- [x] React Router setup
+- [x] Auth Context for state management
 
-### 1. **Authentication System**
-- Secure login screen
-- Session-based authentication (sessionStorage)
-- Protected routes
+### ✅ Phase 2: Authentication
+- [x] Login page with validation
+- [x] Register page with validation
+- [x] Protected routes
+- [x] Auto token refresh on 401
+- [x] Persistent authentication
 
-### 2. **Company Search**
-- Search by stock symbol (e.g., AAPL, GOOGL)
-- Quick access buttons for popular stocks
-- Real-time data fetching from backend
-
-### 3. **Dashboard**
-- Key financial metrics display
-- Market cap, PE ratio, EPS, etc.
-- 90-day stock price chart (Chart.js)
-- AI-powered analysis summary
-- Risk assessment badges
-- Strengths and concerns lists
-
-### 4. **AI Chat Assistant**
-- Interactive chatbot for financial queries
-- Context-aware responses about selected company
-- Clean, modern chat interface
-- Typing indicators
-
-### 5. **Responsive Design**
-- Works on desktop, tablet, and mobile
-- Adaptive layouts using CSS Grid & Flexbox
-- Touch-friendly interface
-
-## 🎨 Design Features
-
-### Color Scheme (Light Theme)
-- **Primary**: #4F46E5 (Indigo)
-- **Secondary**: #06B6D4 (Cyan)
-- **Success**: #10B981 (Green)
-- **Warning**: #F59E0B (Amber)
-- **Danger**: #EF4444 (Red)
-- **Background**: #F9FAFB (Light gray)
-
-### UI Components
-- Gradient backgrounds
-- Card-based layouts
-- Smooth animations
-- Shadow effects
-- Modern typography
+### ✅ Phase 3: Dashboard
+- [x] Portfolio summary cards
+- [x] Holdings preview
+- [x] Market movers (Gainers, Losers, Most Active)
+- [x] Responsive navbar with mobile menu
+- [x] Real-time data refresh
 
 ## 🔌 API Integration
 
-The frontend connects to these backend endpoints:
+All API calls go through the centralized `api.js` service which:
+- Automatically adds JWT tokens to requests
+- Handles token refresh on 401 errors
+- Provides consistent error handling
+- Supports request/response interceptors
 
+Example:
 ```javascript
-GET  /api/company/:symbol          // Get company data
-POST /api/analyze/:symbol          // Analyze company with AI
-GET  /api/company/:symbol/refresh  // Refresh data
-POST /api/chat                     // Chat with AI
-GET  /api/company                  // Get all companies
+import { portfolioService } from './services/portfolioService';
+
+// Get portfolio summary
+const data = await portfolioService.getSummary();
 ```
 
-### API Configuration
-Located in `js/api.js`:
-```javascript
-const API_BASE_URL = 'http://localhost:5000/api';
+## 🎯 Available Services
+
+### Auth Service
+- `login(credentials)` - User login
+- `register(userData)` - User registration
+- `logout()` - User logout
+- `getProfile()` - Get user profile
+- `updateProfile(data)` - Update profile
+- `changePassword(data)` - Change password
+
+### Portfolio Service
+- `getSummary()` - Portfolio overview
+- `getHoldings()` - All holdings
+- `buyStock(data)` - Create buy order
+- `sellStock(data)` - Create sell order
+- `getOrders(params)` - Order history
+
+### Company Service
+- `getCompany(symbol)` - Company data
+- `refreshCompany(symbol)` - Refresh data
+- `analyzeCompany(symbol)` - AI analysis
+
+### Market Service
+- `getMovers()` - Top gainers/losers
+- `getScreener(filter)` - Market cap filter
+- `searchStocks(params)` - Stock search
+- `getSMA(symbol)` - SMA indicator
+- `getRSI(symbol)` - RSI indicator
+
+### Document Service
+- `uploadDocument(file, category)` - Upload file
+- `getDocuments(params)` - All documents
+- `getDocument(id)` - Document details
+- `deleteDocument(id)` - Delete document
+
+### Chat Service
+- `sendMessage(data)` - Send chat message
+- `getChatHistory(sessionId)` - Chat history
+- `startNewSession(symbol)` - New session
+- `deleteChatHistory(sessionId)` - Delete history
+
+## 🛠️ Utility Functions
+
+### Formatters (`utils/formatters.js`)
+- `formatCurrency(value)` - $1,234.56
+- `formatNumber(value)` - 1,234.56
+- `formatPercentage(value)` - +5.25%
+- `formatCompactNumber(value)` - 1.5B, 25.3M
+- `formatDate(date)` - Various formats
+- `getChangeColor(value)` - Color based on +/-
+- `formatFileSize(bytes)` - 2.5 MB
+
+### Validators (`utils/validators.js`)
+- `validateEmail(email)` - Email validation
+- `validatePassword(password)` - Password rules
+- `validateSymbol(symbol)` - Stock symbol
+- `validatePositiveNumber(value)` - Positive check
+- `validateFile(file)` - File validation
+
+## 🎨 Styling
+
+### TailwindCSS Configuration
+Custom colors, animations, and utilities are defined in `tailwind.config.js`.
+
+### Custom CSS
+- Glassmorphism effects
+- Custom scrollbar styling
+- Fade-in animations
+- Dark theme optimized
+
+### Color Palette
+- **Primary Blue**: #0ea5e9
+- **Background**: Slate 900
+- **Cards**: Slate 800 with 50% opacity
+- **Borders**: Slate 700
+- **Success**: Green 500
+- **Error**: Red 500
+
+## 🔐 Authentication Flow
+
+1. User submits login/register form
+2. API call made to backend
+3. On success, tokens saved to localStorage
+4. User data saved to Auth Context
+5. Navigate to dashboard
+6. On 401 error, auto-refresh token
+7. If refresh fails, redirect to login
+
+## 📱 Responsive Design
+
+- **Mobile**: Hamburger menu, stacked cards
+- **Tablet**: Responsive grid layouts
+- **Desktop**: Full navbar, multi-column layouts
+
+## 🚧 Next Steps (To Be Implemented)
+
+### Phase 4: Portfolio Page
+- [ ] Holdings table with sorting
+- [ ] Buy/Sell order modals
+- [ ] Position details
+- [ ] P&L charts
+
+### Phase 5: Company Page
+- [ ] Company search
+- [ ] Detailed company view
+- [ ] Financial charts
+- [ ] Technical indicators display
+- [ ] AI analysis display
+
+### Phase 6: Documents Page
+- [ ] Drag-and-drop file upload
+- [ ] Document list with filters
+- [ ] Processing status indicator
+- [ ] AI analysis visualization
+- [ ] Chart rendering
+
+### Phase 7: Chat Page
+- [ ] Chat interface
+- [ ] Message history
+- [ ] Chart display
+- [ ] Source citations
+- [ ] Session management
+
+### Phase 8: Market Page
+- [ ] Stock screener
+- [ ] Market cap filters
+- [ ] Search functionality
+- [ ] Technical indicators
+
+## 📝 Environment Variables
+
+```env
+# Backend API URL
+VITE_API_URL=http://localhost:5000
 ```
-
-Change this if your backend runs on a different port.
-
-## 📊 Chart Configuration
-
-Using Chart.js for data visualization:
-- Line charts for stock price history
-- Bar charts for metrics comparison
-- Customizable colors and animations
-
-## 🛠️ Customization
-
-### Changing Colors
-Edit CSS variables in `css/styles.css`:
-```css
-:root {
-    --primary: #4F46E5;
-    --secondary: #06B6D4;
-    /* ... more variables */
-}
-```
-
-### Changing Login Credentials
-Edit in `js/app.js`:
-```javascript
-const validEmail = 'your-email@domain.com';
-const validPassword = 'your-secure-password';
-```
-
-### Adding More Metrics
-Edit the `renderDashboard()` method in `js/app.js`
 
 ## 🧪 Testing
 
-### Manual Testing Checklist
-- [ ] Login with correct credentials
-- [ ] Login with incorrect credentials (should show error)
-- [ ] Search for valid stock symbol (AAPL, GOOGL, MSFT)
-- [ ] Search for invalid symbol (should show error)
-- [ ] View dashboard with metrics
-- [ ] Check stock price chart renders
-- [ ] Send chat message
-- [ ] Navigate between tabs
-- [ ] Refresh company data
-- [ ] Logout
+```bash
+# Run tests (when implemented)
+npm test
+
+# Build for production
+npm run build
+
+# Preview production build
+npm run preview
+```
+
+## 🚀 Deployment
+
+### Build for Production
+```bash
+npm run build
+```
+
+Output will be in `dist/` folder.
+
+### Deploy Options
+- **Vercel**: Connect GitHub repo
+- **Netlify**: Drag & drop `dist` folder
+- **AWS S3**: Upload `dist` to S3 bucket
+- **Docker**: Use provided Dockerfile (to be added)
+
+## 📄 Scripts
+
+```bash
+npm run dev       # Start development server
+npm run build     # Build for production
+npm run preview   # Preview production build
+npm run lint      # Run ESLint (to be configured)
+```
 
 ## 🐛 Troubleshooting
 
-### Issue: "Failed to fetch" error
-**Solution**: Make sure backend is running on port 5000
-
-### Issue: CORS error
-**Solution**: Add `CORS_ORIGIN=*` to backend `.env` file
-
-### Issue: Charts not showing
-**Solution**: Check if Chart.js CDN is accessible in `index.html`
-
-### Issue: Login not working
-**Solution**: Verify credentials match what's in the frontend code
-
-### Issue: Blank dashboard
-**Solution**: Check browser console for errors, ensure valid stock symbol
-
-## 📱 Browser Support
-- Chrome/Edge (latest)
-- Firefox (latest)
-- Safari (latest)
-- Mobile browsers (iOS Safari, Chrome Mobile)
-
-## 🔒 Security Considerations
-
-### Current Implementation (Demo)
-- ⚠️ Credentials hardcoded in frontend
-- ⚠️ No encryption for passwords
-- ⚠️ Session stored in sessionStorage
-
-### Production Recommendations
-1. Implement JWT authentication with backend
-2. Use HTTPS for all connections
-3. Add password hashing (bcrypt)
-4. Implement rate limiting
-5. Add CSRF protection
-6. Use secure cookies instead of sessionStorage
-7. Environment-based configuration
-
-## 🎯 Future Enhancements
-
-### Planned Features
-- [ ] User registration
-- [ ] Watchlist/favorites
-- [ ] Multiple portfolios
-- [ ] Real-time stock updates (WebSocket)
-- [ ] Email alerts
-- [ ] PDF report export
-- [ ] Dark mode toggle
-- [ ] More chart types
-- [ ] Historical comparison
-- [ ] News integration
-
-### UI Improvements
-- [ ] Loading skeletons
-- [ ] Better error messages
-- [ ] Offline mode
-- [ ] Progressive Web App (PWA)
-- [ ] Accessibility improvements (ARIA labels)
-
-## 📝 Code Structure
-
-### Main Application Flow
-```
-1. User opens index.html
-2. Login screen appears
-3. User enters credentials
-4. Credentials validated (frontend only for now)
-5. Main app loads
-6. User searches for company
-7. API fetches data from backend
-8. Dashboard renders with metrics and charts
-9. User can chat with AI about the company
-10. User can logout
+### CORS Issues
+Make sure backend has proper CORS configuration:
+```javascript
+app.use(cors({ origin: 'http://localhost:3000' }));
 ```
 
-### Key Classes
-- `FinoraApp`: Main application controller
-- `APIService`: Handles all API calls
-- `ChartManager`: Manages Chart.js instances
+### API Connection Refused
+1. Check backend is running on port 5000
+2. Verify `VITE_API_URL` in `.env`
+3. Check network tab in browser DevTools
 
-## 🤝 Contributing
-This frontend is part of the Finora AI Investment Analyst project.
+### Token Expired
+Tokens are automatically refreshed. If issues persist:
+1. Clear localStorage
+2. Login again
 
-## 📄 License
-MIT License - Part of Finora AI Platform
+### Build Errors
+```bash
+# Clear node_modules and reinstall
+rm -rf node_modules package-lock.json
+npm install
+```
 
-## 👥 Credits
-- **UI Design**: Custom light theme
-- **Charts**: Chart.js
-- **Icons**: Font Awesome 6
-- **Backend**: Finora AI API (Node.js + Express)
+## 📚 Resources
+
+- [React Documentation](https://react.dev/)
+- [Vite Documentation](https://vitejs.dev/)
+- [TailwindCSS Documentation](https://tailwindcss.com/)
+- [React Router Documentation](https://reactrouter.com/)
+
+## 👥 Team
+
+Built by **Team Certified Losers** 🚀
 
 ---
 
-## 🎓 For Developers
-
-### Adding a New Tab
-1. Add navigation link in `index.html`:
-```html
-<a href="#" class="nav-link" data-tab="newtab">New Tab</a>
-```
-
-2. Add tab content:
-```html
-<section id="newtabTab" class="tab-content">
-    <!-- Your content -->
-</section>
-```
-
-3. No JS changes needed - tab switching is automatic!
-
-### Adding a New API Endpoint
-1. Add method to `js/api.js`:
-```javascript
-async getNewData() {
-    return this.request('/new-endpoint');
-}
-```
-
-2. Use in `js/app.js`:
-```javascript
-const data = await api.getNewData();
-```
-
-### Creating Custom Charts
-Use the `ChartManager` class:
-```javascript
-chartManager.createLineChart('canvasId', labels, data, 'Chart Title');
-```
-
----
-
-**Need Help?** Check the browser console for errors or contact the development team.
-
-**Version**: 1.0.0  
-**Last Updated**: November 2024
+**Happy Coding! 🎉**
