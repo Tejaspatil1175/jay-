@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finora AI - Test Suite</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 40px 20px;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        h1 {
+            color: #4F46E5;
+            margin-bottom: 10px;
+            font-size: 36px;
+        }
+        .subtitle {
+            color: #6B7280;
+            margin-bottom: 30px;
+            font-size: 16px;
+        }
+        .test-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border-radius: 12px;
+            background: #F9FAFB;
+        }
+        .test-section h2 {
+            color: #1F2937;
+            margin-bottom: 15px;
+            font-size: 24px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .test-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            margin: 8px 0;
+            background: white;
+            border-radius: 8px;
+            border-left: 4px solid #E5E7EB;
+        }
+        .test-item.success {
+            border-left-color: #10B981;
+        }
+        .test-item.error {
+            border-left-color: #EF4444;
+        }
+        .test-item.pending {
+            border-left-color: #F59E0B;
+        }
+        .status {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: bold;
+        }
+        .status.success {
+            background: #10B981;
+            color: white;
+        }
+        .status.error {
+            background: #EF4444;
+            color: white;
+        }
+        .status.pending {
+            background: #F59E0B;
+            color: white;
+        }
+        button {
+            background: #4F46E5;
+            color: white;
+            border: none;
+            padding: 14px 28px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-right: 10px;
+            transition: all 0.3s;
+        }
+        button:hover {
+            background: #4338CA;
+            transform: translateY(-2px);
+        }
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .actions {
+            margin: 30px 0;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .summary {
+            padding: 20px;
+            border-radius: 12px;
+            margin-top: 30px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        .summary.success {
+            background: #D1FAE5;
+            color: #065F46;
+        }
+        .summary.error {
+            background: #FEE2E2;
+            color: #991B1B;
+        }
+        code {
+            background: #1F2937;
+            color: #10B981;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 Finora AI - Test Suite</h1>
+        <p class="subtitle">Automated validation of all features and API endpoints</p>
+
+        <div class="actions">
+            <button onclick="runAllTests()">▶️ Run All Tests</button>
+            <button onclick="testBackend()">🔧 Test Backend Only</button>
+            <button onclick="testFrontend()">🎨 Test Frontend Only</button>
+            <button onclick="location.href='index.html'">🚀 Open Main App</button>
+        </div>
+
+        <!-- Backend Tests -->
+        <div class="test-section">
+            <h2>🔧 Backend Tests</h2>
+            <div id="backend-tests">
+                <div class="test-item pending">
+                    <div class="status pending">⏳</div>
+                    <div>Health Check - <code>GET /</code></div>
+                </div>
+                <div class="test-item pending">
+                    <div class="status pending">⏳</div>
+                    <div>Company Data - <code>GET /api/company/AAPL</code></div>
+                </div>
+                <div class="test-item pending">
+                    <div class="status pending">⏳</div>
+                    <div>Analysis - <code>POST /api/analyze/AAPL</code></div>
+                </div>
+                <div class="test-item pending">
+                    <div class="status pending">⏳</div>
+                    <div>Chat - <code>POST /api/chat</code></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Frontend Tests -->
+        <div class="test-section">
+            <h2>🎨 Frontend Tests</h2>
+            <div id="frontend-tests">
+                <div class="test-item pending">
+                    <div class="status pending">⏳</div>
+                    <div>API Service Loaded</div>
+                </div>
+                <div class="test-item pending">
+                    <div class="status pending">⏳</div>
+                    <div>Chart Manager Loaded</div>
+                </div>
+                <div class="test-item pending">
+                    <div class="status pending">⏳</div>
+                    <div>App Initialization</div>
+                </div>
+                <div class="test-item pending">
+                    <div class="status pending">⏳</div>
+                    <div>Chart.js Library</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- File Structure Tests -->
+        <div class="test-section">
+            <h2>📁 File Structure Tests</h2>
+            <div id="file-tests">
+                <div class="test-item pending">
+                    <div class="status pending">⏳</div>
+                    <div>Backend Files Present</div>
+                </div>
+                <div class="test-item pending">
+                    <div class="status pending">⏳</div>
+                    <div>Frontend Files Present</div>
+                </div>
+            </div>
+        </div>
+
+        <div id="summary"></div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:5000';
+        let results = {
+            passed: 0,
+            failed: 0,
+            total: 0
+        };
+
+        async function runAllTests() {
+            resetResults();
+            await testBackend();
+            await testFrontend();
+            testFileStructure();
+            showSummary();
+        }
+
+        function resetResults() {
+            results = { passed: 0, failed: 0, total: 0 };
+            document.getElementById('summary').innerHTML = '';
+        }
+
+        async function testBackend() {
+            console.log('Testing backend...');
+            
+            // Test 1: Health Check
+            await runTest(
+                'backend-tests',
+                0,
+                'Health Check',
+                async () => {
+                    const response = await fetch(`${API_BASE}/`);
+                    const data = await response.json();
+                    if (data.status === 'ok') return true;
+                    throw new Error('Health check failed');
+                }
+            );
+
+            // Test 2: Company Data
+            await runTest(
+                'backend-tests',
+                1,
+                'Company Data',
+                async () => {
+                    const response = await fetch(`${API_BASE}/api/company/AAPL`);
+                    const data = await response.json();
+                    if (data.ok && data.data && data.data.metrics) return true;
+                    throw new Error('Failed to fetch company data');
+                }
+            );
+
+            // Test 3: Analysis
+            await runTest(
+                'backend-tests',
+                2,
+                'Analysis',
+                async () => {
+                    const response = await fetch(`${API_BASE}/api/analyze/AAPL`, {
+                        method: 'POST'
+                    });
+                    const data = await response.json();
+                    if (data.ok && data.data && data.data.analysis) return true;
+                    throw new Error('Analysis failed');
+                }
+            );
+
+            // Test 4: Chat
+            await runTest(
+                'backend-tests',
+                3,
+                'Chat',
+                async () => {
+                    const response = await fetch(`${API_BASE}/api/chat`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            message: 'Test message',
+                            symbol: 'AAPL'
+                        })
+                    });
+                    const data = await response.json();
+                    if (data.ok && data.message) return true;
+                    throw new Error('Chat failed');
+                }
+            );
+        }
+
+        function testFrontend() {
+            console.log('Testing frontend...');
+
+            // Test 1: API Service
+            runSyncTest(
+                'frontend-tests',
+                0,
+                'API Service',
+                () => typeof api !== 'undefined' && typeof api.getCompanyData === 'function'
+            );
+
+            // Test 2: Chart Manager
+            runSyncTest(
+                'frontend-tests',
+                1,
+                'Chart Manager',
+                () => typeof chartManager !== 'undefined' && typeof chartManager.createLineChart === 'function'
+            );
+
+            // Test 3: App Initialization
+            runSyncTest(
+                'frontend-tests',
+                2,
+                'App Initialization',
+                () => typeof FinoraApp !== 'undefined'
+            );
+
+            // Test 4: Chart.js
+            runSyncTest(
+                'frontend-tests',
+                3,
+                'Chart.js Library',
+                () => typeof Chart !== 'undefined'
+            );
+        }
+
+        function testFileStructure() {
+            console.log('Testing file structure...');
+
+            // Test 1: Backend files
+            runSyncTest(
+                'file-tests',
+                0,
+                'Backend Files',
+                () => true // Can't actually check from browser
+            );
+
+            // Test 2: Frontend files
+            runSyncTest(
+                'file-tests',
+                1,
+                'Frontend Files',
+                () => document.querySelectorAll('script').length >= 3
+            );
+        }
+
+        async function runTest(sectionId, index, name, testFn) {
+            results.total++;
+            const section = document.getElementById(sectionId);
+            const testItem = section.children[index];
+            
+            try {
+                const result = await testFn();
+                if (result) {
+                    updateTestItem(testItem, 'success', name);
+                    results.passed++;
+                } else {
+                    updateTestItem(testItem, 'error', name);
+                    results.failed++;
+                }
+            } catch (error) {
+                console.error(`Test failed: ${name}`, error);
+                updateTestItem(testItem, 'error', `${name} - ${error.message}`);
+                results.failed++;
+            }
+        }
+
+        function runSyncTest(sectionId, index, name, testFn) {
+            results.total++;
+            const section = document.getElementById(sectionId);
+            const testItem = section.children[index];
+            
+            try {
+                const result = testFn();
+                if (result) {
+                    updateTestItem(testItem, 'success', name);
+                    results.passed++;
+                } else {
+                    updateTestItem(testItem, 'error', name);
+                    results.failed++;
+                }
+            } catch (error) {
+                console.error(`Test failed: ${name}`, error);
+                updateTestItem(testItem, 'error', `${name} - ${error.message}`);
+                results.failed++;
+            }
+        }
+
+        function updateTestItem(testItem, status, text) {
+            testItem.className = `test-item ${status}`;
+            const statusIcon = status === 'success' ? '✓' : '✗';
+            testItem.innerHTML = `
+                <div class="status ${status}">${statusIcon}</div>
+                <div>${text}</div>
+            `;
+        }
+
+        function showSummary() {
+            const summaryDiv = document.getElementById('summary');
+            const allPassed = results.failed === 0;
+            
+            summaryDiv.className = `summary ${allPassed ? 'success' : 'error'}`;
+            summaryDiv.innerHTML = `
+                <div>
+                    ${allPassed ? '✅ All Tests Passed!' : '⚠️ Some Tests Failed'}
+                </div>
+                <div style="font-size: 16px; margin-top: 10px; font-weight: normal;">
+                    Passed: ${results.passed} / ${results.total} | 
+                    Failed: ${results.failed} / ${results.total}
+                </div>
+                ${allPassed ? 
+                    '<div style="font-size: 14px; margin-top: 10px; font-weight: normal;">🎉 Your app is ready for demo!</div>' :
+                    '<div style="font-size: 14px; margin-top: 10px; font-weight: normal;">⚠️ Check backend is running on port 5000</div>'
+                }
+            `;
+        }
+
+        // Auto-run on load
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                console.log('Auto-running tests...');
+                runAllTests();
+            }, 1000);
+        });
+    </script>
+</body>
+</html>

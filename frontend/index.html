@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finora AI - Investment Analyst</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Login Screen -->
+    <div id="loginScreen" class="login-screen">
+        <div class="login-container">
+            <div class="login-header">
+                <i class="fas fa-chart-line"></i>
+                <h1>Finora AI</h1>
+                <p>Investment Analyst Platform</p>
+            </div>
+            <form id="loginForm" class="login-form">
+                <div class="form-group">
+                    <label for="email">
+                        <i class="fas fa-envelope"></i> Email
+                    </label>
+                    <input type="email" id="email" placeholder="Enter your email" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">
+                        <i class="fas fa-lock"></i> Password
+                    </label>
+                    <input type="password" id="password" placeholder="Enter your password" required>
+                </div>
+                <button type="submit" class="btn-login">
+                    <i class="fas fa-sign-in-alt"></i> Sign In
+                </button>
+                <div id="loginError" class="error-message"></div>
+            </form>
+            <div class="login-footer">
+                <p>🔒 Secure Access • Limited Users Only</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Application -->
+    <div id="mainApp" class="main-app" style="display: none;">
+        <!-- Header -->
+        <header class="header">
+            <div class="container">
+                <div class="header-content">
+                    <div class="logo">
+                        <i class="fas fa-chart-line"></i>
+                        <span>Finora AI</span>
+                    </div>
+                    <nav class="nav">
+                        <a href="#" class="nav-link active" data-tab="search">
+                            <i class="fas fa-search"></i> Search
+                        </a>
+                        <a href="#" class="nav-link" data-tab="dashboard">
+                            <i class="fas fa-chart-bar"></i> Dashboard
+                        </a>
+                        <a href="#" class="nav-link" data-tab="chat">
+                            <i class="fas fa-comments"></i> Chat
+                        </a>
+                    </nav>
+                    <button id="logoutBtn" class="btn-logout">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="container">
+                <!-- Search Tab -->
+                <section id="searchTab" class="tab-content active">
+                    <div class="search-hero">
+                        <h2>Search Company Analysis</h2>
+                        <p>Enter a stock symbol to get AI-powered financial insights</p>
+                        
+                        <div class="search-box">
+                            <input type="text" id="searchInput" placeholder="Enter stock symbol (e.g., AAPL, GOOGL, MSFT)" />
+                            <button id="searchBtn" class="btn-primary">
+                                <i class="fas fa-search"></i> Analyze
+                            </button>
+                        </div>
+                        
+                        <div class="popular-stocks">
+                            <span>Popular:</span>
+                            <button class="stock-chip" data-symbol="AAPL">AAPL</button>
+                            <button class="stock-chip" data-symbol="GOOGL">GOOGL</button>
+                            <button class="stock-chip" data-symbol="MSFT">MSFT</button>
+                            <button class="stock-chip" data-symbol="TSLA">TSLA</button>
+                            <button class="stock-chip" data-symbol="AMZN">AMZN</button>
+                        </div>
+                    </div>
+                    
+                    <div id="searchLoading" class="loading" style="display: none;">
+                        <div class="spinner"></div>
+                        <p>Analyzing company data...</p>
+                    </div>
+                    
+                    <div id="searchError" class="error-card" style="display: none;"></div>
+                </section>
+
+                <!-- Dashboard Tab -->
+                <section id="dashboardTab" class="tab-content">
+                    <div id="companyHeader" class="company-header">
+                        <div class="company-info">
+                            <h1 id="companyName">Select a company</h1>
+                            <p id="companySymbol" class="symbol"></p>
+                        </div>
+                        <button id="refreshBtn" class="btn-secondary">
+                            <i class="fas fa-sync-alt"></i> Refresh
+                        </button>
+                    </div>
+
+                    <div id="dashboardContent" class="dashboard-content">
+                        <div class="empty-state">
+                            <i class="fas fa-chart-pie"></i>
+                            <h3>No Company Selected</h3>
+                            <p>Search for a company to view its financial analysis</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Chat Tab -->
+                <section id="chatTab" class="tab-content">
+                    <div class="chat-container">
+                        <div class="chat-header">
+                            <h3>
+                                <i class="fas fa-robot"></i> AI Financial Assistant
+                            </h3>
+                            <p id="chatCompanyInfo">Select a company first to start chatting</p>
+                        </div>
+                        
+                        <div id="chatMessages" class="chat-messages">
+                            <div class="chat-message bot">
+                                <div class="message-avatar">
+                                    <i class="fas fa-robot"></i>
+                                </div>
+                                <div class="message-content">
+                                    <p>Hello! I'm your AI financial assistant. Search for a company first, then ask me anything about its financials, metrics, or investment potential.</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="chat-input-container">
+                            <input type="text" id="chatInput" placeholder="Ask me about the company..." disabled />
+                            <button id="sendChatBtn" class="btn-primary" disabled>
+                                <i class="fas fa-paper-plane"></i>
+                            </button>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="container">
+                <p>&copy; 2024 Finora AI. Powered by Gemini AI & Alpha Vantage</p>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast"></div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/chart.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
